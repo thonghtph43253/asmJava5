@@ -20,5 +20,5 @@ public class KichThuoc {
     @NotBlank(message = "Không để trống tên kích thước")
     private String ten;
     @Column(name = "trangthai")
-    private boolean trangThai;
+    private Integer trangThai;
 }

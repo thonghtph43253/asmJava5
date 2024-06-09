@@ -20,5 +20,5 @@ public class MauSac {
     @NotBlank(message = "Không để trống tên màu")
     private String ten;
     @Column(name = "trangthai")
-    private boolean trangThai;
+    private Integer trangThai;
 }

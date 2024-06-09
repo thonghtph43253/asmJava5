@@ -24,6 +24,7 @@
             <div class="my-3">
                 Mã: <form:input path="ma"/><br>
                 <form:errors path="ma"/>
+                <span style="color: red">${er}</span><br>
             </div>
             <div class="mb-3">
                 Tên: <form:input path="ten"/><br>
@@ -31,8 +32,8 @@
             </div>
 
             <div class="mb-3">
-                Trạng thái: <form:radiobutton path="trangThai" value="true" label="Hoạt động" />
-                <form:radiobutton path="trangThai" value="false" label="Không hoạt động"/><br>
+                Trạng thái: <form:radiobutton path="trangThai" value="1" label="Hoạt động" />
+                <form:radiobutton path="trangThai" value="0" label="Không hoạt động"/><br>
             </div>
             <button class="btn btn-success">Thêm</button>
             <button class="btn btn-warning" type="submit" formaction="/shopaaa/updateMS?page=QuanLyMauSac&id=${mausac.id}" formmethod="post" >Sửa</button>
@@ -58,7 +59,7 @@
                     <td>${nv.ma}</td>
                     <td>${nv.ten}</td>
 
-                    <td>${nv.trangThai?"Hoạt động":"Không hoạt động"}</td>
+                    <td>${nv.trangThai==1?"Hoạt động":"Không hoạt động"}</td>
                     <td>
 
                         <a class="btn btn-danger" href="/shopaaa/deleteMS/${nv.id}">Xóa</a>

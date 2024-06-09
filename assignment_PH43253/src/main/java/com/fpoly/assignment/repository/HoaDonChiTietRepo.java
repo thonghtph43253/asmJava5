@@ -11,8 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HoaDonChiTietRepo extends JpaRepository<HoaDonChiTiet,Integer> {
     @Query("select hdct from HoaDonChiTiet  hdct join HoaDon  hd on hdct.hoaDon.id =hd.id join SPChiTiet spct on hdct.spChiTiet.id = spct.id where hd.id =:id " +
-            "and spct.mauSac.ten like:s and spct.kichThuoc.ten like:s and spct.sanPham.ten like:s")
+            "and (spct.mauSac.ten like:s or spct.kichThuoc.ten like:s or spct.sanPham.ten like:s)")
     public Page<HoaDonChiTiet> findByIDHDandSPandKTandMs(@Param("s")String s, @Param("id")Integer idhd, Pageable pageable);
     @Query("select sum(hdct.donGia*hdct.soLuong) from HoaDonChiTiet hdct join HoaDon hd on hdct.hoaDon.id = hd.id where hd.id =:id")
     public Double getTongTien(@Param("id") Integer idhd);
+    @Query("select count(s) > 0 from HoaDonChiTiet s where s.spChiTiet.id =:id")
+    public boolean existsByIDSPCT(@Param("id") Integer id);
 }

@@ -25,22 +25,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/shopaaa")
 public class ShopAAAController {
-//    @Autowired
-//    NhanVienService nvService;
-//    @Autowired
-//    KhachHangService khService;
-//    @Autowired
-//    KichThuocService ktService;
-//    @Autowired
-//    MauSacService msService;
-//    @Autowired
-//    SanPhamService spService;
-//    @Autowired
-//    SanPhamCTService spctService;
-//    @Autowired
-//    HoaDonService hdService;
-//    @Autowired
-//    HoaDonCTService hdctService;
+
 
     //Tiem Repo
     @Autowired
@@ -69,9 +54,11 @@ public class ShopAAAController {
         int size = 5;
         Pageable pageable = PageRequest.of(page,size);
         if(namePage.equals("QuanLyNhanVien")) {
-            model.addAttribute("listNV",nhanVienRepo.findByTenContaining(search,pageable));
+            String s = "%"+search+"%";
+            model.addAttribute("listNV",nhanVienRepo.findByTenContainingAndMaNVContaining(s,pageable));
         }else if(namePage.equals("QuanLyKhachHang")){
-            model.addAttribute("listKH", khachHangRepo.findByTenContaining(search,pageable));
+            String s = "%"+search+"%";
+            model.addAttribute("listKH", khachHangRepo.findByTenContainingAndSdtContaining(s,pageable));
         }else if (namePage.equals("QuanLySize")){
             model.addAttribute("listKT", kichThuocRepo.findByTenContaining(search,pageable));
         }else if(namePage.equals("QuanLyMauSac")){
@@ -79,17 +66,10 @@ public class ShopAAAController {
         }else if(namePage.equals("QuanLySanPham")){
             model.addAttribute("listSP",sanPhamRepo.findByTenContaining(search,pageable));
         }else if(namePage.equals("QuanLyBanHang")){
-            model.addAttribute("listSPCT",spChiTietRepo.findAll());
+            model.addAttribute("listSPCT",spChiTietRepo.findHoatDong());
             model.addAttribute("listKHAll",khachHangRepo.findAll());
         }else if(namePage.equals("QuanLyHoaDon")){
-//            if(search.isEmpty()){
-//                model.addAttribute("listHD",hdService.getByPage(page,size));
-//                model.addAttribute("soTrang", hdService.getSotrang(5));
-//            }else {
-//                model.addAttribute("listHD",hdService.getByPageSearch(page,5,search));
-//                model.addAttribute("soTrang", hdService.getSotrangSearch(5, search));
-//
-//            }
+
             String s = "%"+search+"%";
             model.addAttribute("listHD",hoaDonRepo.findAllByNameKHAndNV(s,pageable));
         }
@@ -118,7 +98,13 @@ public class ShopAAAController {
 
     @PostMapping("/addNhanVien")
     public String addNhanVien(@Valid @ModelAttribute("nhanvien")NhanVien nhanvien,
-                              BindingResult result){
+                              BindingResult result,
+                              Model model){
+        List<NhanVien> nvTest = nhanVienRepo.findByMa(nhanvien.getMaNV(),nhanvien.getTenDangNhap());
+        if(nvTest.size()>0){
+            model.addAttribute("er","Nhan vien da ton tai!");
+            return "shopAAA/index";
+        }
         if(result.hasErrors()){
 
             return "shopAAA/index";
@@ -151,14 +137,27 @@ public class ShopAAAController {
     }
     @GetMapping("/deleteNV/{id}")
     public String deleteNhanVien(@PathVariable("id") Integer id){
-//        nvService.delete(id);
-        nhanVienRepo.deleteById(id);
+        boolean exist = hoaDonRepo.existsByIDNhanVien(id);
+        if(exist){
+            NhanVien nv = nhanVienRepo.findById(id).get();
+            nv.setTrangThai(false);
+            nhanVienRepo.save(nv);
+        }else {
+            nhanVienRepo.deleteById(id);
+        }
+
         return "redirect:/shopaaa?page=QuanLyNhanVien";
     }
     //End nhan vien
     @PostMapping("/addKhachHang")
     public String addKhachHang(@Valid @ModelAttribute("khachhang") KhachHang kh,
-                               BindingResult result){
+                               BindingResult result,
+                               Model model){
+        List<KhachHang> khTest  = khachHangRepo.findByMa(kh.getMaKH(), kh.getSdt());
+        if (khTest.size()>0){
+            model.addAttribute("er","Khach hang da ton tai");
+            return "shopAAA/index";
+        }
         if(result.hasErrors()){
             return "shopAAA/index";
         }
@@ -182,7 +181,14 @@ public class ShopAAAController {
     }
     @GetMapping("/deleteKH/{id}")
     public String xoaKhachHang(@PathVariable("id")Integer id){
-        khachHangRepo.deleteById(id);
+        boolean exist = hoaDonRepo.existsByIDKhachHang(id);
+        if (exist){
+            KhachHang kh = khachHangRepo.findById(id).get();
+            kh.setTrangThai(false);
+            khachHangRepo.save(kh);
+        }else {
+            khachHangRepo.deleteById(id);
+        }
         return "redirect:/shopaaa?page=QuanLyKhachHang";
     }
     //End khách hàng
@@ -193,6 +199,13 @@ public class ShopAAAController {
                             @RequestParam(defaultValue = "0",name = "pt") int page,
                             @RequestParam(defaultValue = "",name = "search") String search,
                             @RequestParam("page") String namePage){
+        MauSac mstest= mauSacRepo.findByMa(ms.getMa());
+        if (mstest!=null){
+            model.addAttribute("er","Mã đã tồn tại");
+            model.addAttribute("page",page);
+            model.addAttribute("listMS",mauSacRepo.findByTenContaining(search,PageRequest.of(page,5)));
+            return "shopAAA/index";
+        }
         if(result.hasErrors()){
             model.addAttribute("page",page);
             model.addAttribute("listMS",mauSacRepo.findByTenContaining(search,PageRequest.of(page,5)));
@@ -232,7 +245,15 @@ public class ShopAAAController {
     }
     @GetMapping("/deleteMS/{id}")
     public String deleteMS(@PathVariable("id") Integer id){
-        mauSacRepo.deleteById(id);
+        boolean exist = spChiTietRepo.existsByIDMauSac(id);
+        if (exist){
+            MauSac ms = mauSacRepo.findById(id).get();
+            ms.setTrangThai(0);
+            mauSacRepo.save(ms);
+        }else {
+           mauSacRepo.deleteById(id);
+        }
+
         return "redirect:/shopaaa?page=QuanLyMauSac";
     }
     //End Màu sắc
@@ -293,7 +314,7 @@ public class ShopAAAController {
         boolean exist = spChiTietRepo.existsByIDKichThuoc(id);
         if (exist){
              KichThuoc kt = kichThuocRepo.findById(id).get();
-             kt.setTrangThai(false);
+             kt.setTrangThai(0);
              kichThuocRepo.save(kt);
         }else {
             kichThuocRepo.deleteById(id);
@@ -309,6 +330,13 @@ public class ShopAAAController {
                              @RequestParam(defaultValue = "0",name = "pt") int page,
                              @RequestParam(defaultValue = "",name = "search") String search,
                              @RequestParam("page") String namePage){
+        SanPham spTest = sanPhamRepo.findByMa(sp.getMa());
+        if(spTest!= null){
+            model.addAttribute("er","Mã sản phẩm đã tồn tại!");
+            model.addAttribute("page",page);
+            model.addAttribute("listSP",sanPhamRepo.findByTenContaining(search,PageRequest.of(page,5)));
+            return "shopAAA/index";
+        }
         if (result.hasErrors()){
             model.addAttribute("page",page);
             model.addAttribute("listSP",sanPhamRepo.findByTenContaining(search,PageRequest.of(page,5)));
@@ -348,7 +376,21 @@ public class ShopAAAController {
     }
     @GetMapping("/deleteSP/{id}")
     public String deleteSP(@PathVariable("id") Integer id){
-        sanPhamRepo.deleteById(id);
+        boolean exist = spChiTietRepo.existsByIDSanPham(id);
+        if(exist){
+            SanPham sp = sanPhamRepo.findById(id).get();
+            sp.setTrangThai(false);
+            sanPhamRepo.save(sp);
+            List<SPChiTiet> list = spChiTietRepo.findAllByIdSP(id);
+            for (SPChiTiet spct:list) {
+                spct.setTrangThai(0);
+                spChiTietRepo.save(spct);
+            }
+
+        }else {
+            sanPhamRepo.deleteById(id);
+        }
+
         return "redirect:/shopaaa?page=QuanLySanPham";
     }
     //End sản phẩm
@@ -368,11 +410,11 @@ public class ShopAAAController {
     }
     @ModelAttribute("mausacs")
     public List<MauSac> getListMauSac(){
-        return mauSacRepo.findAll();
+        return mauSacRepo.findHoatDong();
     }
     @ModelAttribute("kichthuocs")
     public List<KichThuoc> getListKichThuoc(){
-        return kichThuocRepo.findAll();
+        return kichThuocRepo.findHoatDong();
     }
     @PostMapping("/addSanPhamCT")
     public String addSanPhamCT(@Valid @ModelAttribute("sanphamct") SPChiTiet spct,
@@ -384,6 +426,16 @@ public class ShopAAAController {
                                Model model
                                ){
         String s = "%"+search+"%";
+        List<SPChiTiet> spctTest = spChiTietRepo.getByMaAndIDMSAndIDKT(spct.getMaSPCT(),spct.getMauSac().getId(),spct.getKichThuoc().getId(),idsp);
+        if(spctTest.size()>0){
+            model.addAttribute("er","San pham chi tiet da ton tai!");
+            model.addAttribute("listSPCT",spChiTietRepo.findAllByKTandMSandIDSP(s,idsp,PageRequest.of(page,5)));
+            model.addAttribute("sanphamct", new SPChiTiet());
+            model.addAttribute("idsp",idsp);
+            model.addAttribute("sp",sanPhamRepo.findById(idsp).get());
+            model.addAttribute("page",page);
+            return "shopAAA/index";
+        }
         if(result.hasErrors()){
             model.addAttribute("listSPCT",spChiTietRepo.findAllByKTandMSandIDSP(s,idsp,PageRequest.of(page,5)));
             model.addAttribute("sanphamct", new SPChiTiet());
@@ -405,7 +457,7 @@ public class ShopAAAController {
                                @RequestParam("idspct") Integer idspct){
         String s = "%"+search+"%";
         model.addAttribute("listSPCT",spChiTietRepo.findAllByKTandMSandIDSP(s,idsp,PageRequest.of(page,5)));
-        model.addAttribute("sanphamct", new SPChiTiet());
+        model.addAttribute("sanphamct", spChiTietRepo.findById(idspct).get());
         model.addAttribute("idsp",idsp);
         model.addAttribute("sp",sanPhamRepo.findById(idsp).get());
         model.addAttribute("page",page);
@@ -429,13 +481,21 @@ public class ShopAAAController {
             model.addAttribute("page",page);
             return "shopAAA/index";
         }
+        spct.setSanPham(sanPhamRepo.findById(idsp).get());
         spChiTietRepo.save(spct);
-        return "redirect:/shopaaa/sanphamct?page=QuanLySanPhamCT&id="+spct.getSanPham().getId();
+        return "redirect:/shopaaa/sanphamct?page=QuanLySanPhamCT&id="+spChiTietRepo.findById(spct.getId()).get().getSanPham().getId();
     }
     @GetMapping("/deleteSPCT/{id}")
     public String deleteSCPT(@PathVariable("id") Integer idSpct){
+        boolean exist = hoaDonChiTietRepo.existsByIDSPCT(idSpct);
+        if(exist){
+            SPChiTiet spChiTiet = spChiTietRepo.findById(idSpct).get();
+            spChiTiet.setTrangThai(0);
+            spChiTietRepo.save(spChiTiet);
+        }else {
+            spChiTietRepo.deleteById(idSpct);
+        }
         Integer idsp = spChiTietRepo.findById(idSpct).get().getId();
-        spChiTietRepo.deleteById(idSpct);
         return "redirect:/shopaaa/sanphamct?page=QuanLySanPhamCT&id="+idsp;
 
     }

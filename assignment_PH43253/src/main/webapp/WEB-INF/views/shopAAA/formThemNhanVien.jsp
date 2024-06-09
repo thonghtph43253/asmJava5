@@ -17,6 +17,7 @@
         <div class="my-2">
             Tên: <form:input path="ten" class="form-control"/>
             <form:errors path="ten"/>
+            <span style="color: red">${er}</span><br>
         </div>
         <div class="mb-2">
             Mã NV:<form:input path="maNV"  class="form-control" />

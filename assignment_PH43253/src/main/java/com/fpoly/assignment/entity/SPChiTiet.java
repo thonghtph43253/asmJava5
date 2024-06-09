@@ -39,7 +39,7 @@ public class SPChiTiet {
     @Column(name = "dongia")
     private Double donGia;
     @Column(name = "trangthai")
-    private boolean trangThai;
+    private Integer trangThai;
 //    public String getTenSP(){
 //        return SanPhamCTService.getTenSanPham(this.idSanPham);
 //    }

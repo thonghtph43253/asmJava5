@@ -32,8 +32,8 @@
             </div>
 
             <div class="mb-3">
-                Trạng thái: <form:radiobutton path="trangThai" value="true" label="Hoạt động" />
-                <form:radiobutton path="trangThai" value="false" label="Không hoạt động"/><br>
+                Trạng thái: <form:radiobutton path="trangThai" value="1" label="Hoạt động" />
+                <form:radiobutton path="trangThai" value="0" label="Không hoạt động"/><br>
             </div>
              <button>Thêm</button>
             <button type="submit" formaction="/shopaaa/updateKT?id=${kichthuoc.id}&page=QuanLySize" formmethod="post" >Sửa</button>
@@ -59,7 +59,7 @@
                     <td>${nv.ma}</td>
                     <td>${nv.ten}</td>
 
-                    <td>${nv.trangThai?"Hoạt động":"Không hoạt động"}</td>
+                    <td>${nv.trangThai ==1?"Hoạt động":"Không hoạt động"}</td>
                     <td>
 
                         <a class="btn btn-danger" href="/shopaaa/deleteKT/${nv.id}">Xóa</a>

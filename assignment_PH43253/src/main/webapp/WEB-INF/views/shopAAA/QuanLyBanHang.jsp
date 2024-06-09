@@ -21,7 +21,7 @@
         <form action="/shopaaa/taoHoaDon" method="post">
             <input name="idnv" value="${nv.id}" type="hidden">
             <div class="row">
-                <div class="col-3">
+                <div class="col-6">
                     <p>Tên khách hàng</p>
                     <select name="idKhachHang">
                         <c:forEach items="${listKHAll}" var="kh">
@@ -29,6 +29,7 @@
                         </c:forEach>
 
                     </select>
+                    <a href="?page=themKhachHang" class="btn btn-success">Thêm khách hàng mới</a>
                 </div>
                 <div class="col-3">
                     <p>Trạng thái đơn</p>
@@ -39,7 +40,7 @@
 
                     </select>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <c:if test="${listMua.size()>0}">
                         <button type="submit" class="btn btn-success" style="height: 90px">Tạo hóa đơn</button>
                     </c:if>

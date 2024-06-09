@@ -15,7 +15,7 @@
         <input style="width: 400px" name="search" placeholder="Nhập id cần tìm..." >
         <input type="hidden" name="page" value="QuanLyHoaDonCT">
         <input type="hidden" name="pt" value="${page}">
-        <input type="hidden" name="id" value="${idsp}">
+        <input type="hidden" name="id" value="${hd.id}">
         <button>Tìm</button>
     </form>
 </div>

@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginController {
-    @Autowired
-    NhanVienService nvService;
+
     @Autowired
     NhanVienRepo nhanVienRepo;
     @GetMapping("/shopaaa/login")

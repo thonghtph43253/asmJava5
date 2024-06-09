@@ -28,7 +28,8 @@
             <input name="idSanPham" value="${sp.id}" type="hidden">
             <div class="mb-3">
                 Mã SPCT: <form:input path="maSPCT"/><br>
-                <form:errors path="maSPCT"/>
+                <form:errors path="maSPCT"/><br>
+                <span style="color:red;">${er}</span>
             </div>
             <div class="mb-3">
                 Màu sắc: <form:select path="mauSac">
@@ -50,8 +51,8 @@
             </div>
 
             <div class="mb-3">
-                Trạng thái: <form:radiobutton path="trangThai" value="true" label="Hoạt động" />
-                <form:radiobutton path="trangThai" value="false" label="Không hoạt động"/><br>
+                Trạng thái: <form:radiobutton path="trangThai" value="1" label="Hoạt động" />
+                <form:radiobutton path="trangThai" value="0" label="Không hoạt động"/><br>
             </div>
             <button>Thêm</button>
             <button type="submit" formaction="/shopaaa/updateSPCT?page=QuanLySanPhamCT&id=${sanphamct.id}" formmethod="post" >Sửa</button>
@@ -85,7 +86,7 @@
                     <td>${nv.soLuong}</td>
                     <td>${nv.donGia}</td>
 
-                    <td>${nv.trangThai?"Hoạt động":"Không hoạt động"}</td>
+                    <td>${nv.trangThai ==1?"Hoạt động":"Không hoạt động"}</td>
                     <td>
                         <a class="btn btn-danger" href="/shopaaa/deleteSPCT/${nv.id}">Xóa</a>
                     </td>

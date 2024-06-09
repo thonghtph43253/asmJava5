@@ -26,6 +26,7 @@
             <div class="my-3">
                 Mã: <form:input path="ma"/><br>
                 <form:errors path="ma"/>
+                <span style="color: red">${er}</span>
             </div>
             <div class="mb-3">
                 Tên: <form:input path="ten"/><br>

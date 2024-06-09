@@ -11,12 +11,14 @@
 <div class="d-flex justify-content-between ">
     <a class="btn btn-info" href="/shopaaa?page=QuanLyKhachHang"> <<< Quay lại</a>
     <h3 class="text-center">Thêm khách hàng</h3>
+    <a class="btn btn-info" href="/shopaaa?page=QuanLyBanHang">  >>>Đi tới trang bán hàng</a>
     <h2></h2>
 </div>
 <form:form action="/shopaaa/addKhachHang?page=themKhachHang" method="post" modelAttribute="khachhang">
     <div class="my-3">
         Tên:<form:input path="ten"/>
         <form:errors path="ten"/>
+        <span style="color: red">${er}</span><br>
     </div>
     <div class="mb-3">
         Số điện thoại:<form:input path="sdt"/>
